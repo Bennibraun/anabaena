@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "cyanosegment"
+version = "0.1.0"
+description = ""
+authors = ["Zach Maas <zach.maas@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+jupyter = "^1.0.0"
+jupyterlab = "^4.0.6"
+torchvision = "^0.15.2"
+cellpose = {extras = ["gui"], version = "^3"}
+scikit-image = "^0.22.0"
+tqdm = "^4.66.1"
+tensorboard = "^2.15.1"
+torch-tb-profiler = "^0.4.3"
+cellpose-omni = {git = "https://github.com/kevinjohncutler/cellpose-omni.git"}
+omnipose = {git = "https://github.com/kevinjohncutler/omnipose.git"}
+
+
+[tool.poetry.group.dev.dependencies]
+mkdocs = "^1.5.3"
+mkdocs-material = {extras = ["imaging"], version = "^9.5.12"}
+ruff = "^0.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
