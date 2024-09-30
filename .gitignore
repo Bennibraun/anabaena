@@ -1,2 +1,4 @@
 *.tif
 scratch_data
+slurm*
+__pycache__

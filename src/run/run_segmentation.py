@@ -35,6 +35,20 @@
 
 # Code:
 
+import torch
+# Check for CUDA
+print("Checking for CUDA")
+print(torch.version.cuda)
+if torch.cuda.is_available():
+    print("CUDA is available (GPU)")
+    device = torch.device("cuda")
+elif torch.backends.mps.is_available():
+    print("MPS is available (M1 Mac)")
+    device = torch.device("mps")
+else:
+    print("CUDA is not available (CPU)")
+    device = torch.device("cpu")
+
 from nd2reader import ND2Reader  # ND2 file reading
 from skimage import io
 import tifffile  # Tiff file writing
@@ -43,7 +57,6 @@ from cellpose import models  # Cellpose
 from cellpose import denoise  # Denoising
 from tqdm import tqdm  # Progress bar
 import numpy as np
-import torch
 import os
 
 # Parse command line arguments
@@ -156,17 +169,7 @@ if start_frame is None:
 if end_frame is None:
     end_frame = -1
 
-# Check for CUDA
-print("Checking for CUDA")
-if torch.cuda.is_available():
-    print("CUDA is available (GPU)")
-    device = torch.device("cuda")
-elif torch.backends.mps.is_available():
-    print("MPS is available (M1 Mac)")
-    device = torch.device("mps")
-else:
-    print("CUDA is not available (CPU)")
-    device = torch.device("cpu")
+
 
 # Check for experimental flags
 if denoise_p:
@@ -261,7 +264,10 @@ def get_movie_frame(movie, frame_idx: int):
 print(f"Reading input file {input_file}")
 with reader(input_file) as images:
     if end_frame == -1:
-        end_frame = len(images)
+        # end_frame = len(images)
+        # Bug fix: len doesn't return the actual frame count, but some weird total across multiple channels.
+        # Not sure how this would work with Tiff files.
+        end_frame = images.metadata['total_images_per_channel']-1
     # used_images = images[start_frame:end_frame]
     print(f"Running segmentation on {end_frame - start_frame + 1} frames")
     # Run segmentation on all frames

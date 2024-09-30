@@ -1,5 +1,7 @@
 name: qoi_cyano
 channels:
+  - pytorch
+  - nvidia
   - bioconda
   - defaults
   - conda-forge
@@ -52,7 +54,14 @@ dependencies:
   - comm=0.2.1
   - contourpy=1.2.0
   - cryptography=43.0.0
-  - cudatoolkit=11.8.0
+  - cuda-cudart=12.4.127
+  - cuda-cupti=12.4.127
+  - cuda-libraries=12.4.0
+  - cuda-nvrtc=12.4.127
+  - cuda-nvtx=12.4.127
+  - cuda-opencl=12.6.68
+  - cuda-runtime=12.4.0
+  - cuda-version=12.6
   - cycler=0.11.0
   - cyrus-sasl=2.1.28
   - dask-core=2024.8.2
@@ -103,6 +112,7 @@ dependencies:
   - importlib-metadata=7.0.1
   - importlib_metadata=7.0.1
   - importlib_resources=6.4.0
+  - intel-openmp=2023.1.0
   - ipykernel=6.28.0
   - ipython=8.27.0
   - ipywidgets=8.1.2
@@ -141,15 +151,19 @@ dependencies:
   - libabseil=20240116.2
   - libaec=1.0.4
   - libavif=0.11.1
-  - libblas=3.9.0
   - libbrotlicommon=1.0.9
   - libbrotlidec=1.0.9
   - libbrotlienc=1.0.9
-  - libcblas=3.9.0
   - libclang=14.0.6
   - libclang13=14.0.6
+  - libcublas=12.4.2.65
+  - libcufft=11.2.0.44
+  - libcufile=1.11.1.6
   - libcups=2.3.3
+  - libcurand=10.3.7.68
   - libcurl=8.9.1
+  - libcusolver=11.6.0.99
+  - libcusparse=12.3.0.142
   - libcxx=18.1.8
   - libcxxabi=18.1.8
   - libdeflate=1.17
@@ -166,10 +180,14 @@ dependencies:
   - libgrpc=1.62.2
   - libiconv=1.16
   - libidn2=2.3.4
-  - liblapack=3.9.0
+  - libjpeg-turbo=2.0.0
   - libllvm14=14.0.6
   - libnghttp2=1.57.0
+  - libnpp=12.2.5.2
   - libnsl=2.0.1
+  - libnvfatbin=12.6.68
+  - libnvjitlink=12.4.99
+  - libnvjpeg=12.3.1.89
   - libopenblas=0.3.21
   - libopus=1.3.1
   - libpng=1.6.39
@@ -182,7 +200,6 @@ dependencies:
   - libstdcxx-ng=14.1.0
   - libtasn1=4.19.0
   - libtiff=4.5.1
-  - libtorch=2.3.0
   - libunistring=0.9.10
   - libuuid=2.38.1
   - libuv=1.48.0
@@ -207,6 +224,10 @@ dependencies:
   - mkdocs=1.5.3
   - mkdocs-material=9.5.12
   - mkdocs-material-extensions=1.3.1
+  - mkl=2023.1.0
+  - mkl-service=2.4.0
+  - mkl_fft=1.3.10
+  - mkl_random=1.2.7
   - mpc=1.1.0
   - mpfr=4.0.2
   - mpmath=1.3.0
@@ -223,7 +244,6 @@ dependencies:
   - nest-asyncio=1.6.0
   - nettle=3.7.3
   - networkx=3.3
-  - nomkl=1.0
   - notebook=7.0.8
   - notebook-shim=0.2.3
   - numba=0.60.0
@@ -282,7 +302,9 @@ dependencies:
   - python-json-logger=2.0.7
   - python-tzdata=2023.3
   - python_abi=3.10
-  - pytorch=2.3.0
+  - pytorch=2.4.1
+  - pytorch-cuda=12.4
+  - pytorch-mutex=1.0
   - pytz=2024.1
   - pyu2f=0.1.5
   - pywavelets=1.7.0
@@ -322,6 +344,7 @@ dependencies:
   - stack_data=0.2.0
   - superqt=0.6.7
   - sympy=1.13.2
+  - tbb=2021.8.0
   - tensorboard=2.15.1
   - tensorboard-data-server=0.7.0
   - terminado=0.17.1
@@ -331,7 +354,9 @@ dependencies:
   - tk=8.6.14
   - tomli=2.0.1
   - toolz=0.12.0
-  - torchvision=0.15.2
+  - torchaudio=2.4.1
+  - torchtriton=3.0.0
+  - torchvision=0.19.1
   - tornado=6.4.1
   - tqdm=4.66.1
   - traitlets=5.14.3
@@ -369,4 +394,3 @@ dependencies:
   - zlib=1.2.13
   - zstandard=0.22.0
   - zstd=1.5.5
-prefix: /Users/bebr1814/miniconda3/envs/qoi_cyano
