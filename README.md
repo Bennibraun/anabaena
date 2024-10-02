@@ -1,22 +1,56 @@
-# Cyanosegment - Cyanobacteria Optimized Deep Cell Segmentation
+# Anabaena Image Segmentation and Classification
+This repository contains tools for segmenting and classifying images related to the *Anabaena* dataset, with the ability to handle large files and work in high-performance computing environments like BioFrontiers Super Computer FIJI.
 
-<p align="center">
-	⚠️ The main documentation for this project can be found at  <a href="https://cameronlab.github.io/cypose/">GitHub Pages</a> ⚠️
-</p>
+## Table of Contents
+1. [Install Instructions](#install-instructions)
+2. [Data Management](#data-management)
+3. [Execution Instructions](#execution-instructions)
+4. [Project Directory](#project-directory)
+5. [Developers](#developers)
 
-## Description
-This script is designed to run segmentation on a cyanobacteria movie using the [Cellpose](https://github.com/MouseLand/cellpose) model. It reads an ND2 file, applies the specified model for segmentation, and saves the results as a TIFF stack. Included in this repository is our recommended model for segmentation of *Synechococcus sp.* Strain PCC 7002, finetuned from the base cellpose model. This model is saved in the *models* folder.
+## Install Instructions
+### Conda/Mamba/Micromamba environment setup
+Using a conda / mamba / micromamba environment please use
+``` bash
+conda {or mamba or micromamba} env create -f anabaena/env/env.yml
+```
 
-## Installation Instructions
-To use this script, you need to have Python installed along with the following packages: *nd2reader*, *tifffile*, *argparse*, *cellpose*, *tqdm*, and *numpy*. You can install these using pip:
-```bash
-pip install nd2reader tifffile argparse cellpose tqdm numpy
+Please check this environemnt has all the same dependencies as ours to do so please use the following
+``` bash
+conda {or mamba or micromamba} env export --no-builds > env_{yourname}.yml
+python env/check_yaml.py {filepath-to-your-newly-created-env}.yml {filepath-to-another-env}.yml
 ```
-Alternatively (and likely easier on Windows), you can install these using conda:
+
+an example would be 
+``` bash
+python env/check_yaml.py anabaena/env/bens_env.yml anabaena/env/env_zac.yml
 ```
-conda install -c conda-forge nd2reader tifffile argparse cellpose tqdm numpy
+
+and this will print any dependencies with version mismatch. 
+
+### Poetry Installation (Alternative)
+
+Additionally, you can install an environment using the `pyproject.toml`. To do so, please use `poetry` (or an alternative) with the following command:
+``` bash
+poetry install
 ```
-In some circumstances, you may need to install *pytorch* manually. You can do this using pip or conda to get proper GPU acceleration. See the [Pytorch website](https://pytorch.org/get-started/locally/) for more information.
+
+## Data Management
+
+These movies that we are working with contain a non-trivial file size and can be run locally, but it is reccomended to use a super computer. In our case we will use the BioFrontiers Super Computer FIJI, also note that these files should be saved in your `Scratch/` directory for better image processing. This must be done locally (not connected to fiji) To upload files to the cluster using a macOS please use the command:
+### Uploading files to the cluster 
+#### macOS
+``` bash
+rsync -avz -e ssh --progress /Volumes/[drive name]/* [username]@fiji.colorado.edu:[path to directory on fiji]
+```
+
+#### Windows
+``` bash
+rsync -avz -e ssh --progress /drives/y/* [username]@fiji.colorado.edu:[path to directory on fiji]
+```
+
+For more information checkout the shell script `anabaena/src/shell_scripts/rsync_datasets_from_biofstorage.sh`
+
 ## Execution Instructions
 To run the script, use the following command in your terminal:
 ```bash
@@ -36,10 +70,58 @@ python run_segmentation.py --input_file data/movie.nd2 --output_file results/seg
 ```
 This command will run segmentation on the frames 10 to 50 of *data/movie.nd2* using the 'cyto' model, and save the results as a TIFF stack in *results/segmented.tiff*. It will also save additional files with flows and probabilities for debugging purposes.
 
-## Building a distributable binary
 
-To build a distributable package for your operating system, you'll need to install the dependencies listed above, as well as [pyinstaller](https://www.pyinstaller.org/). Note that you'll need to be on a windows system for this to work. Then, run the following command in the root directory of this repository:
-```bash
-pyinstaller --onefile run_segmentation.py
+## Project directory
+``` bash
+anabaena/
+├── env/
+│   ├── check_yaml.py
+│   ├── env_barebones.yml # does not contain versions of dependencies
+│   └── env_working.yml   # does contain versions of dependencies 
+├── models/
+│   ├── 7002/             # unsure what this model is
+│   ├── 33047/            # previous models for the anabaena
+├── src/
+│   ├── classification/   # contains python scripts for classification, future problem to focus on
+│   ├── run/              # contains python and shell scripts for running classification and segmentation
+│   ├── segmentation/     # contains python scripts for segmentation, generating the segmentation models
+│   └── shell_scripts/    # contains shell and sbatch scripts for automating the train, test, benchmarking, and synching data process 
+├── .gitignore
+├── CHANGELOG
+├── LICENSE
+├── pyproject.toml
+├── README.md
+├── shell.nix
+└── TODO.md
 ```
-This will create a single executable file in the *dist* folder. You can then run this executable from the command line with the same arguments as above. If you are on Windows, this will be an exe file, and if you are on Linux, this will be an ELF file. On Mac, this will be a DMG file that should work.
+
+## Developers
+
+This code is open source and has been initially developed by the Cameron Lab at CU Boulder under this repo. And this repo is designated for the development and improvement of this inital source for the MCDB-6440 course project. 
+
+### Contributers
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Bennibraun">
+        <img src="https://github.com/Bennibraun.png" width="300" />
+      </a>
+      <br />
+      <b>Ben</b>
+    </td>
+    <td align="center">
+      <a href="https://github.com/MichaelLuzadder">
+        <img src="https://github.com/MichaelLuzadder.png" width="300" />
+      </a>
+      <br />
+      <b>Michael</b>
+    </td>
+    <td align="center">
+      <a href="https://github.com/caterer-z-t">
+        <img src="https://github.com/caterer-z-t.png" width="300" />
+      </a>
+      <br />
+      <b>Zac</b>
+    </td>
+  </tr>
+</table>
