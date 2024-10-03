@@ -9,7 +9,7 @@
 
 nvidia-smi
 
-python run_segmentation.py --input_file /Users/bebr1814/projects/anabaena/scratch_data/2020.3.5_ana33047_minusn_0003.nd2 --output_file /Users/bebr1814/projects/anabaena/scratch_data/test1.tif --model /Users/bebr1814/projects/anabaena/models/33047/33047_chris_original
+python /Users/zaca2954/academics/anabaena/src/run/run_segmentation.py --input_file /Users/bebr1814/projects/anabaena/scratch_data/train_data/2020.3.5_ana33047_minusn_0003.nd2 --output_file /Users/bebr1814/projects/anabaena/scratch_data/test1.tif --model /Users/bebr1814/projects/anabaena/models/33047/33047_chris_original
 
 
 
