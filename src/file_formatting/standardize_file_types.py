@@ -4,6 +4,8 @@ import nd2reader
 import numpy as np
 import os
 import argparse
+import nd2
+import imageio
 
 class ImageHandler:
     def __init__(self, file_path):
@@ -45,22 +47,48 @@ class ImageHandler:
             except Exception as nd2_error:
                 print(f"Error reading ND2 file: {nd2_error}")
                 return None
-
+        
+        elif self.file_extension == '.png':
+            try:
+                image = Image.open(self.file_path)
+                self.image = np.array(image)
+                return self.image
+            except Exception as png_error:
+                print(f'Error reading png file: {png_error}')
+                return None
+            
         else:
             print(f"Unsupported file format: {self.file_extension}")
             return None
 
-    def save_image(self, save_path):
+    def save_image(self, save_path, figure_type:str = None):
         """Save the image to the specified path.
 
         Args:
-            save_path (str): file path for the saved image
+            save_path (str): file path for the saved image or directory path for saving TIFF files.
 
         Raises:
-            ValueError: If Pillow cannot save image do to being in improper format
+            ValueError: If Pillow cannot save image due to being in improper format
         """
-        file_extension = os.path.splitext(save_path)[1].lower()
-        
+        if os.path.isdir(save_path):
+            if figure_type == 'tiff':
+                # If the save path is a directory, save using the ND2 method
+                self.save_nd2_as_tiff(save_path)  # Pass the directory path directly
+                return
+            elif figure_type == 'png':
+                self.save_as_png(save_path)
+                return
+            elif figure_type == 'pdf':
+                self.save_as_pdf(save_path)
+                return
+    
+        try:
+            file_extension = os.path.splitext(save_path)[1].lower()
+        except Exception as e:
+            print(f"Error obtaining file extension: {e}")
+            file_extension = None
+
+        # Handle saving as TIFF
         if file_extension in ['.tif', '.tiff']:
             # Try saving TIFF using Pillow first
             try:
@@ -79,13 +107,98 @@ class ImageHandler:
                 except Exception as tifffile_save_error:
                     print(f"Error saving image with tifffile: {tifffile_save_error}")
         
-        elif file_extension == '.nd2':
-            # Saving ND2 is not supported, notify the user
-            print(f"Saving ND2 format is not currently supported in this class, or in Python.")
+        # Handle saving as PNG
+        elif file_extension == '.png':
+            self.save_as_png(save_path)
+        
+        # Handle saving as PDF
+        elif file_extension == '.pdf':
+            self.save_as_pdf(save_path)
+
+        elif file_extension is None and self.file_extension == ".nd2":
+            # Save ND2 using the new method
+            self.save_nd2_as_tiff(save_path)
         
         else:
             print(f"Unsupported file format for saving: {file_extension}")
 
+    def save_nd2_as_tiff(self, output_directory):
+        """Read ND2 file and save each frame as TIFF.
+
+        Args:
+            output_directory (str): Directory for saving output TIFF files.
+        """
+        # Extract the base filename without the extension from self.file_path
+        base_filename = os.path.splitext(os.path.basename(self.file_path))[0]
+
+        with nd2.ND2File(self.file_path) as nd2_file:
+            data = nd2_file.asarray()  # Assuming data shape is (t, c, z, y, x)
+
+            print(f"Data shape: {data.shape}")
+            num_frames = data.shape[0]
+            num_channels = data.shape[1]
+
+            for t in range(num_frames):
+                for c in range(num_channels):
+                    frame = data[t, c]  # Extract the frame for the current time and channel
+                    frame_normalized = np.clip(frame, 0, 65535).astype(np.uint16)  # Normalize the frame
+
+                    # Use the base filename for the output, appending the appropriate elements
+                    output_filename = os.path.join(output_directory, f"{base_filename}_t{t}_c{c}.tiff")
+                    imageio.imwrite(output_filename, frame_normalized)
+                    print(f"Saved {output_filename}")
+
+    def save_as_png(self, save_path):
+        """Save each frame of the image as individual PNG files.
+
+        Args:
+            save_path (str): Directory to save the PNG files.
+        """
+        # Extract the base filename without the extension from self.file_path
+        base_filename = os.path.splitext(os.path.basename(self.file_path))[0]
+
+        with nd2.ND2File(self.file_path) as nd2_file:
+            data = nd2_file.asarray()  # Assuming data shape is (t, c, z, y, x)
+
+            print(f"Data shape: {data.shape}")
+            num_frames = data.shape[0]
+            num_channels = data.shape[1]
+
+            for t in range(num_frames):
+                for c in range(num_channels):
+                    frame = data[t, c]  # Extract the frame for the current time and channel
+                    frame_normalized = np.clip(frame, 0, 65535).astype(np.uint16)  # Normalize the frame
+
+                    # Use the base filename for the output, appending the appropriate elements
+                    output_filename = os.path.join(save_path, f"{base_filename}_t{t}_c{c}.png")
+                    imageio.imwrite(output_filename, frame_normalized)
+                    print(f"Saved {output_filename}")
+
+    def save_as_pdf(self, save_path):
+        """Save each frame of the image as individual PDF files.
+
+        Args:
+            save_path (str): Directory to save the PDF files.
+        """
+        # Extract the base filename without the extension from self.file_path
+        base_filename = os.path.splitext(os.path.basename(self.file_path))[0]
+
+        with nd2.ND2File(self.file_path) as nd2_file:
+            data = nd2_file.asarray()  # Assuming data shape is (t, c, z, y, x)
+
+            print(f"Data shape: {data.shape}")
+            num_frames = data.shape[0]
+            num_channels = data.shape[1]
+
+            for t in range(num_frames):
+                for c in range(num_channels):
+                    frame = data[t, c]  # Extract the frame for the current time and channel
+                    frame_normalized = np.clip(frame, 0, 65535).astype(np.uint16)  # Normalize the frame
+
+                    # Use the base filename for the output, appending the appropriate elements
+                    output_filename = os.path.join(save_path, f"{base_filename}_t{t}_c{c}.pdf")
+                    imageio.imwrite(output_filename, frame_normalized)
+                    print(f"Saved {output_filename}")
 
 def main():
     # Create an argument parser
@@ -121,5 +234,3 @@ if __name__ == "__main__":
 
     ## saving an image
     ### python your_script.py --input_file /path/to/input/file.nd2 --output_file /path/to/output/file.tif
-
-

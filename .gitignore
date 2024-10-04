@@ -3,3 +3,4 @@ scratch_data
 slurm*
 __pycache__
 data
+core # this is for cellprofiler, used to generate the masks and ground truths
