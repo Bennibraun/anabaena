@@ -80,12 +80,22 @@ anabaena/
 │   └── env_working.yml   # does contain versions of dependencies 
 ├── models/
 │   ├── 7002/             # unsure what this model is
-│   ├── 33047/            # previous models for the anabaena
+│   └── 33047/            # previous models for the anabaena
 ├── src/
 │   ├── classification/   # contains python scripts for classification, future problem to focus on
+│   ├── file_formatting/   # contains python scripts for file formatting
+│   │   ├── __init__.py
+│   │   ├── README.md
+│   │   └──  standardize_file_types.py  
 │   ├── run/              # contains python and shell scripts for running classification and segmentation
 │   ├── segmentation/     # contains python scripts for segmentation, generating the segmentation models
-│   └── shell_scripts/    # contains shell and sbatch scripts for automating the train, test, benchmarking, and synching data process 
+│   │   ├── __init__.py
+│   │   ├── diff_masks.py
+│   │   ├── gen_ground_truths.py
+│   │   └── segmentation_comparison.py
+│   ├── shell_scripts/    # contains shell and sbatch scripts for automating the train, test, benchmarking, and synching data process
+│   └── utils/    # contains all the utility functions necessary in out analysis
+├── __init__.py 
 ├── .gitignore
 ├── CHANGELOG
 ├── LICENSE
