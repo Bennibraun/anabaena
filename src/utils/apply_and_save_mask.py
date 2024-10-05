@@ -1,31 +1,28 @@
 import os
 import sys
-
 import skimage as sk
 from skimage.filters import threshold_local, gaussian
 from skimage.morphology import disk, closing
-from skimage import feature, exposure
+from skimage import feature, exposure, transform
 import cv2
 import numpy as np
-
-# Dynamically add the 'src' directory to the system path
-current_dir = os.path.dirname(os.path.abspath(__file__))
-src_path = os.path.join(current_dir, '..')  # Go one level up to 'src'
-sys.path.append(src_path)  # Add the src directory to sys.path
-
 
 from utils.save_mask import save_mask
 
 # Main function to apply different masking methods
 def apply_and_save_masks(image, base_filename, mask_dir):
-
+        # Downsample image for performance if large
+    if max(image.shape) > 1000:
+        downsample_factor = 2
+        image = transform.rescale(image, 1.0 / downsample_factor)
+        
     # 1. Otsu Thresholding
     threshold_otsu = sk.filters.threshold_otsu(image)
     mask_otsu = (image > threshold_otsu).astype(np.uint8) * 255
     save_mask(mask_otsu, "otsu", base_filename, mask_dir)
 
-    # 2. Adaptive Thresholding
-    block_size = 35  # Adjust as needed
+    # 2. Adaptive Thresholding with dynamic block size
+    block_size = int(min(image.shape) / 20)  # Dynamic block size
     local_thresh = threshold_local(image, block_size, offset=10)
     mask_adaptive = (image > local_thresh).astype(np.uint8) * 255
     save_mask(mask_adaptive, "adaptive_threshold", base_filename, mask_dir)
@@ -57,8 +54,22 @@ def apply_and_save_masks(image, base_filename, mask_dir):
     mask_equalized_otsu = (equalized_image > threshold_equalized_otsu).astype(np.uint8) * 255
     save_mask(mask_equalized_otsu, "equalized_otsu", base_filename, mask_dir)
 
-    # 8. Contour Detection after Otsu
+    # 8. CLAHE + Otsu
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    image_clahe = clahe.apply((image * 255).astype(np.uint8))
+    threshold_clahe_otsu = sk.filters.threshold_otsu(image_clahe)
+    mask_clahe_otsu = (image_clahe > threshold_clahe_otsu).astype(np.uint8) * 255
+    save_mask(mask_clahe_otsu, "clahe_otsu", base_filename, mask_dir)
+
+    # 9. Contour Detection after Otsu with area filtering
     contours, _ = cv2.findContours(mask_otsu, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    mask_contours = np.zeros_like(mask_otsu)
-    cv2.drawContours(mask_contours, contours, -1, 255, thickness=cv2.FILLED)
-    save_mask(mask_contours, "contours_otsu", base_filename, mask_dir)
+    min_contour_area = 100  # Experiment with this value
+    filtered_contours = [c for c in contours if cv2.contourArea(c) > min_contour_area]
+    mask_filtered_contours = np.zeros_like(mask_otsu)
+    cv2.drawContours(mask_filtered_contours, filtered_contours, -1, 255, thickness=cv2.FILLED)
+    save_mask(mask_filtered_contours, "filtered_contours_otsu", base_filename, mask_dir)
+
+    # 10. Multi-level Otsu Thresholding
+    thresholds_multiotsu = sk.filters.threshold_multiotsu(image, classes=3)  # Experiment with classes
+    mask_multiotsu = np.digitize(image, bins=thresholds_multiotsu)
+    save_mask(mask_multiotsu, "multiotsu", base_filename, mask_dir)

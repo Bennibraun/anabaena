@@ -4,7 +4,7 @@ import os
 import numpy as np
 from PIL import Image  # Ensure you have Pillow installed for TIFF handling
 from tqdm import tqdm
-import skimage as sk
+
 
 # Dynamically add the 'src' directory to the system path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -12,7 +12,7 @@ src_path = os.path.join(current_dir, '..')  # Go one level up to 'src'
 sys.path.append(src_path)  # Add the src directory to sys.path
 
 from file_formatting.standardize_file_types import ImageHandler  
-
+from utils.apply_and_save_mask import apply_and_save_masks
 
 def step_1():
     # Step 1, arg parser
@@ -34,7 +34,7 @@ def step_2(args):
         img = image_handler.read_image()
         image_handler.save_image(args.output_file, args.figure_type)
 
-def step_3(args):
+def step_3(args, file_index:int = 0):
     # Step 3: Generate masks for the PNG files
     png_files = []
     
@@ -70,24 +70,17 @@ def step_3(args):
             # Save the mask image to the specified mask directory
             mask_img.save(os.path.join(args.mask_dir, mask_filename))
 
-    # runs masking for one png file to optimize this before conducting on all files
+    # Load and process a single PNG file
     if args.skip:
-        png_file = png_files[0]
+        png_file = png_files[file_index]
         image_handler = ImageHandler(png_file)
         image = image_handler.read_image()
-        # Apply threshold to create a mask
-        # threshold = 400  # Adjust threshold as needed
 
-        threshold = sk.filters.threshold_otsu(image)
-        mask = (image > threshold).astype(np.uint8) * 255  # Binary mask (0 or 255)
-        mask_img = Image.fromarray(mask)
-        # Use os.path.splitext() to separate the filename from its extension
-        base_filename = os.path.splitext(os.path.basename(png_file))[0]  # Get file name without extension
-        mask_filename = f"{base_filename}_mask.png"  # Append '_mask' to the file name
         # Ensure the mask directory exists
-        os.makedirs(args.mask_dir, exist_ok=True)
-        # Save the mask image to the specified mask directory
-        mask_img.save(os.path.join(args.mask_dir, mask_filename))
+        base_filename = os.path.splitext(os.path.basename(png_file))[0]  # Get file name without extension
+        apply_and_save_masks(image, base_filename, args.mask_dir)
+
+
 
 
 if __name__ == "__main__":
@@ -95,8 +88,8 @@ if __name__ == "__main__":
 
     # please remove this comment if you need to save these as png's or another file form such as tiff or pdf
     # step_2(args)
-    
-    step_3(args)
+    for i in range(0, 2, 1):
+        step_3(args, i)
 
     ## Example usage
     ### if you do not include `--skip` it will conduct this for all the frames in the movie
