@@ -9,7 +9,15 @@
 - Image more cells
 - Figure out tracking
 - Get some kind of scientific readout / meaningful conclusion (what causes differentiation?)
+- Overlay mask to unmasked image
+- Use masks for denoising
+
+- update `ImageHandler()` to properly format the metadata in the new images collected, be able to handle all different cases of this
+- when saving `.tiff's` have the channels save as one file rather than seperates. for png's pdf's, and other vector and raster images 
+- when using `ImageHandler()` to work on full movie in `run_segmentation.py` rather than one frame
+- debug `segmentation.py`
+- work on ground truths, on the movies, new data -- movies are basically individual images
 
 # Finished
 
-- [x] Figure out file formats - standardize to ND2 or TIFF? by: @caterer-z-t, cannot save nd2 images, lets standardize to TIFF, please see `src/file_formatting/README.md` for more information about using `ImageHandler()`
+- [x] Figure out file formats - standardize to ND2 or TIFF? by: @caterer-z-t, cannot save nd2 images, lets standardize to TIFF, please see `src/file_formatting/README.md` for more information about using `ImageHandler()` -- WIP
