@@ -67,7 +67,7 @@ src_path = os.path.join(current_dir, '..')  # Go one level up to 'src'
 sys.path.append(src_path)  # Add the src directory to sys.path
 
 from utils.get_movie_frame import get_movie_frame
-from file_formatting.standardize_file_types import ImageHandler  
+from src.file_formatting.ImageHandler import ImageHandler  
 
 # Parse command line arguments
 parser = argparse.ArgumentParser(description="Run segmentation on a movie")

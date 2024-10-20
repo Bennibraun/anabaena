@@ -11,7 +11,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 src_path = os.path.join(current_dir, '..')  # Go one level up to 'src'
 sys.path.append(src_path)  # Add the src directory to sys.path
 
-from file_formatting.standardize_file_types import ImageHandler  
+from src.file_formatting.ImageHandler import ImageHandler  
 from utils.apply_and_save_mask import apply_and_save_masks
 
 def step_1():
