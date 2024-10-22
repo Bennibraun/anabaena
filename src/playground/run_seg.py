@@ -35,39 +35,16 @@
 
 # Code:
 
-import torch
-
-# Check for CUDA
-print("Checking for CUDA")
-print(torch.version.cuda)
-if torch.cuda.is_available():
-    print("CUDA is available (GPU)")
-    device = torch.device("cuda")
-elif torch.backends.mps.is_available():
-    print("MPS is available (M1 Mac)")
-    device = torch.device("mps")
-else:
-    print("CUDA is not available (CPU)")
-    device = torch.device("cpu")
-
 from nd2reader import ND2Reader  # ND2 file reading
-from skimage import io
+# from skimage import io
 import tifffile  # Tiff file writing
 import argparse  # Command line arguments
 from cellpose import models  # Cellpose
 from cellpose import denoise  # Denoising
 from tqdm import tqdm  # Progress bar
 import numpy as np
+import torch
 import os
-import sys
-
-# Dynamically add the 'src' directory to the system path
-current_dir = os.path.dirname(os.path.abspath(__file__))
-src_path = os.path.join(current_dir, '..')  # Go one level up to 'src'
-sys.path.append(src_path)  # Add the src directory to sys.path
-
-from utils.get_movie_frame import get_movie_frame
-from src.file_formatting.ImageHandler import ImageHandler  
 
 # Parse command line arguments
 parser = argparse.ArgumentParser(description="Run segmentation on a movie")
@@ -179,7 +156,17 @@ if start_frame is None:
 if end_frame is None:
     end_frame = -1
 
-
+# Check for CUDA
+print("Checking for CUDA")
+if torch.cuda.is_available():
+    print("CUDA is available (GPU)")
+    device = torch.device("cuda")
+elif torch.backends.mps.is_available():
+    print("MPS is available (M1 Mac)")
+    device = torch.device("mps")
+else:
+    print("CUDA is not available (CPU)")
+    device = torch.device("cpu")
 
 # Check for experimental flags
 if denoise_p:
@@ -255,100 +242,6 @@ if denoise_p:
         device=device, model_type="denoise_cyto3"
     )
 
-print(f"Reading input file {input_file}")
-
-#########################################################################
-###
-### updated code to use the Image handler to standardize file formatting
-###
-#########################################################################
-
-# Use the ImageHandler class to read the input file
-image_handler = ImageHandler(input_file)
-images = image_handler.read_image()  # Read the image using the class
-
-if images is None:
-    raise ValueError(f"Failed to read images from {input_file}")
-
-if end_frame == -1:
-    # end_frame = len(images)
-    # Bug fix: len doesn't return the actual frame count, but some weird total across multiple channels.
-    # Not sure how this would work with Tiff files.
-    end_frame = images.metadata['total_images_per_channel'] - 1
-
-print(f"Running segmentation on {end_frame - start_frame + 1} frames")
-
-# Initialize lists to store segmentation results
-masks = []
-flows = []
-probs = []
-
-# Iterate over the frames for segmentation
-for i in tqdm(
-    range(start_frame, end_frame + 1),
-    desc="Frames",
-    unit="frame",
-):
-    # Fetch the movie frame from the image array
-    image = get_movie_frame(images, i)
-    
-    # Size estimation and potential warning if size is unusually large
-    if size is None:
-        size, size_style = size_model.eval(image, channels=chan)
-        print(f"Size estimated as {size} for frame {i}")
-        if size > 50:
-            print(f"WARNING: Size estimated as {size}, this is unusually large")
-
-    # Optional denoising
-    if denoise_p:
-        image = denoise_model.eval(image, channels=chan)
-
-    # Segmentation
-    mask, flow, _ = model.eval(
-        image,
-        diameter=size,
-        channels=chan,
-        tile=True,
-        niter=niter,
-        flow_threshold=flow_threshold,
-    )
-
-    # Append segmentation results
-    flows.append(flow[0])
-    probs.append(flow[2])
-    masks.append(mask)
-
-# Stack the masks into a numpy array
-masks = np.stack(masks)
-
-# Save the masks using the ImageHandler class
-print(f"Saving to {output_file}")
-image_handler.image = masks  # Set the image to the masks array
-image_handler.save_image(output_file)  # Save the masks
-
-# If debugging, save additional output files
-if debug:
-    print("Saving debug files")
-    flows = np.stack(flows)
-    
-    # Save the flows
-    flow_file = output_file + ".flow.tif"
-    image_handler.image = flows
-    image_handler.save_image(flow_file)
-
-    # Save the probs
-    prob_file = output_file + ".prob.tif"
-    image_handler.image = np.stack(probs)
-    image_handler.save_image(prob_file)
-
-#########################################################################
-###
-###     end of updated code
-###
-#########################################################################
-
-"""
-
 # Select the file reader
 if file_type == "nd2":
     reader = ND2Reader
@@ -356,12 +249,19 @@ elif file_type == "tif":
     reader = tifffile.imread
 
 
+def get_movie_frame(movie, frame_idx: int):
+    """
+    Given a movie and a frame, load the frame from the movie
+    """
+    movie.bundle_axes = ["y", "x", "c"]
+    movie_frame = movie.get_frame(frame_idx)
+    return np.array(movie_frame, dtype=np.uint16)
+
+
+print(f"Reading input file {input_file}")
 with reader(input_file) as images:
     if end_frame == -1:
-        # end_frame = len(images)
-        # Bug fix: len doesn't return the actual frame count, but some weird total across multiple channels.
-        # Not sure how this would work with Tiff files.
-        end_frame = images.metadata['total_images_per_channel']-1
+        end_frame = len(images)
     # used_images = images[start_frame:end_frame]
     print(f"Running segmentation on {end_frame - start_frame + 1} frames")
     # Run segmentation on all frames
@@ -423,4 +323,3 @@ with reader(input_file) as images:
 
 #
 # run_segmentation.py ends here
-"""
