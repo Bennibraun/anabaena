@@ -310,17 +310,38 @@ if __name__ == "__main__":
 
 ## example usage
 
-# multi fov
+# multi fov tiff, pngs
 ## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20241010_ZMB_Anabaena/20241010_001_ZMB.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_png
 
-# single fov
+# multi fov tiff, no png's
+## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20241010_ZMB_Anabaena/20241010_001_ZMB.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground 
+
+# single fov tiff
 ## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20241010_ZMB_Anabaena/20241010_001_ZMB002/1.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_png
 
-# multi frames
+# single fov tiff, no png's
+## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20241010_ZMB_Anabaena/20241010_001_ZMB002/1.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground 
+
+# multi frames tiff, pngs
 ## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20210709_Ana_-N_to_-N_channelbf,cy5,cfp,rfp_seq0000_0000.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_png
 
-# save multi fov for individual fov's
+# multi frames tiff, no png's
+## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20210709_Ana_-N_to_-N_channelbf,cy5,cfp,rfp_seq0000_0000.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground
+
+# multi fov tiff, individual fov tiff, pngs
 ## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20241010_ZMB_Anabaena/20241010_001_ZMB.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_png --save_fov
 
-# save multi frames for individaul frames
+# multi fov tiff, individual fov tiff, no png's
+## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20241010_ZMB_Anabaena/20241010_001_ZMB.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_fov
+
+# individual fov's no multi tiff, no png
+## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20241010_ZMB_Anabaena/20241010_001_ZMB.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_combined_tiff False
+
+# mutli frame tiff combined, individual frame tiff, pngs
 ## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20210709_Ana_-N_to_-N_channelbf,cy5,cfp,rfp_seq0000_0000.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_png --save_frames
+
+# individual frame tiff, no multiframe tiff, pngs
+## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20210709_Ana_-N_to_-N_channelbf,cy5,cfp,rfp_seq0000_0000.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_png --save_frames --save_combined_tiff False
+
+# individual frame tiff, no multiframe tiff, no pngs
+## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20210709_Ana_-N_to_-N_channelbf,cy5,cfp,rfp_seq0000_0000.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_frames --save_combined_tiff False
