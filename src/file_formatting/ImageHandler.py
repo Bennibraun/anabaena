@@ -164,9 +164,9 @@ class ImageHandler:
             print(image[0])
 
             for c in range(n_channels):
-                name = os.path.join(self.output_dir, f"{base_filename}.tiff").replace('.tif',f'.channel_{c}.tif')
+                name = os.path.join(self.output_dir, f"{base_filename}.tiff").replace('.tif',f'.{self.reader.metadata["channels"][c].replace(" ","_").lower().replace("mono","brightfield")}.tif')
                 tifffile.imwrite(name, image[c])
-                print('Saved TIFF:', os.path.join(self.output_dir, f"{base_filename}.tiff").replace('.tif',f'.{self.reader.metadata["channels"][c].replace(" ","_").lower().replace("mono","brightfield")}.tif'))
+                print('Saved TIFF:', name)
             # tifffile.imwrite(output_tiff_path, np.array(tiff_stack))
 
     def save_individual_tiff(self, tiff_stack, base_filename: str, i: int, save_tiff: bool = False):
