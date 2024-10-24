@@ -76,8 +76,10 @@ class ImageHandler:
     def get_movie_frame(self, movie, frame_idx):
         """Given a movie and a frame index, load the frame from the movie."""
         if self.file_type == "nd2":
+            # print('getting movie frame')
             movie.bundle_axes = ["y", "x", "c"]
             movie_frame = movie.get_frame(frame_idx)
+            # print(movie_frame.shape)
             return np.array(movie_frame, dtype=np.uint16)
         elif self.file_type == "tif":
             return movie[frame_idx]
@@ -129,7 +131,7 @@ class ImageHandler:
 
         # Initialize TIFF stack
         tiff_stack = []
-        
+
         with self.reader as images:
             print(self.dimensions)
 
@@ -144,13 +146,28 @@ class ImageHandler:
                 tiff_stack = self.process_frames_over_fov(images, base_filename, save_png, save_fov)
 
             self.saved_combined_tiff(base_filename, tiff_stack, save_combined_tiff)
+        
 
     def saved_combined_tiff(self, base_filename, tiff_stack, save_combined_tiff:bool = True):
         if save_combined_tiff:
             # Save TIFF stack
             output_tiff_path = os.path.join(self.output_dir, f"{base_filename}.tiff")
-            tifffile.imwrite(output_tiff_path, np.array(tiff_stack))
-            print('Saved TIFF:', output_tiff_path)
+            n_channels = self.reader.shape[-1]
+            print(self.reader.shape)
+
+            image = self.reader[0]
+            image = image.transpose(2,0,1)
+
+            print(image.shape)
+            print(image)
+
+            print(image[0])
+
+            for c in range(n_channels):
+                name = os.path.join(self.output_dir, f"{base_filename}.tiff").replace('.tif',f'.channel_{c}.tif')
+                tifffile.imwrite(name, image[c])
+                print('Saved TIFF:', os.path.join(self.output_dir, f"{base_filename}.tiff").replace('.tif',f'.{self.reader.metadata["channels"][c].replace(" ","_").lower().replace("mono","brightfield")}.tif'))
+            # tifffile.imwrite(output_tiff_path, np.array(tiff_stack))
 
     def save_individual_tiff(self, tiff_stack, base_filename: str, i: int, save_tiff: bool = False):
         if save_tiff:
@@ -161,9 +178,12 @@ class ImageHandler:
     def process_single_frame(self, image, base_filename, save_png):
         """Processes a single frame and saves necessary files."""
         tiff_stack = []
+
+        # print('processing single frame')
         
         channels_to_save = self.get_channels_to_save(image)
 
+        # print(channels_to_save)
         for ch in channels_to_save:
             channel_name = self.reader.metadata['channels'][ch]
             channel_image = image[..., ch]
