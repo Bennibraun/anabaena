@@ -1,21 +1,21 @@
 #!/bin/bash
-#SBATCH --output=/scratch/Users/zama8258/e_and_o/%x_%j.out
-#SBATCH --error=/scratch/Users/zama8258/e_and_o/%x_%j.err
+#SBATCH --output=/scratch/Users/zaca2954/e_and_o/%x_%j.out
+#SBATCH --error=/scratch/Users/zaca2954/e_and_o/%x_%j.err
 #SBATCH -p nvidia-a100
 #SBATCH -N 1
 #SBATCH -c 1
 #SBATCH --gres=gpu:1
 #SBATCH --mem=32gb
-#SBATCH --mail-user=zama8258@colorado.edu
+#SBATCH --mail-user=zaca2954@colorado.edu
 
 set -euxo pipefail
 
-trainDir=/scratch/Users/zama8258/ZachML/corrected_data
-model="cyto2"
+trainDir=/scratch/Shares/anabaena_mcdb6440
+model="cyto3"
 
 cd "$trainDir" || exit 1
 python -m cellpose --train --use_gpu \
-        --verbose --chan 0 --chan2 1 \
+        --verbose --chan 0 --chan2 0 \
         --dir "$trainDir" \
         --mask_filter _labeled \
         --img_filter _img \
