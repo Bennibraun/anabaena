@@ -123,7 +123,6 @@ class ImageHandler:
             save_png: bool = False, 
             save_frames:bool = False, 
             save_fov:bool = False, 
-            save_combined_tiff:bool = True
             ):
         """Processes each frame and saves TIFFs for analysis and PNGs for visualization."""
         print(f"Reading input file {self.input_file}")
@@ -145,29 +144,28 @@ class ImageHandler:
             elif 'v' in self.dimensions:
                 tiff_stack = self.process_frames_over_fov(images, base_filename, save_png, save_fov)
 
-            self.saved_combined_tiff(base_filename, tiff_stack, save_combined_tiff)
+            self.save_channelsplit_tiff(base_filename, tiff_stack)
         
 
-    def saved_combined_tiff(self, base_filename, tiff_stack, save_combined_tiff:bool = True):
-        if save_combined_tiff:
-            # Save TIFF stack
-            output_tiff_path = os.path.join(self.output_dir, f"{base_filename}.tiff")
-            n_channels = self.reader.shape[-1]
-            print(self.reader.shape)
+    def save_channelsplit_tiff(self, base_filename, tiff_stack):
+        # Save TIFF stack
+        output_tiff_path = os.path.join(self.output_dir, f"{base_filename}.tiff")
+        n_channels = self.reader.shape[-1]
+        print(self.reader.shape)
 
-            image = self.reader[0]
-            image = image.transpose(2,0,1)
+        image = self.reader[0]
+        image = image.transpose(2,0,1)
 
-            print(image.shape)
-            print(image)
+        print(image.shape)
+        print(image)
 
-            print(image[0])
+        print(image[0])
 
-            for c in range(n_channels):
-                name = os.path.join(self.output_dir, f"{base_filename}.tiff").replace('.tif',f'.{self.reader.metadata["channels"][c].replace(" ","_").lower().replace("mono","brightfield")}.tif')
-                tifffile.imwrite(name, image[c])
-                print('Saved TIFF:', name)
-            # tifffile.imwrite(output_tiff_path, np.array(tiff_stack))
+        for c in range(n_channels):
+            name = os.path.join(self.output_dir, f"{base_filename}.tiff").replace('.tif',f'.{self.reader.metadata["channels"][c].replace(" ","_").lower().replace("mono","brightfield")}.tif')
+            tifffile.imwrite(name, image[c])
+            print('Saved TIFF:', name)
+        # tifffile.imwrite(output_tiff_path, np.array(tiff_stack))
 
     def save_individual_tiff(self, tiff_stack, base_filename: str, i: int, save_tiff: bool = False):
         if save_tiff:
@@ -276,7 +274,6 @@ def main(
         save_png=False, 
         save_frames=False, 
         save_fov=False, 
-        save_comb_tif=True,  # Default is now True
         selected_channels=None
         ):
     
@@ -289,8 +286,7 @@ def main(
     processor.process_and_save_frames(
         save_png=save_png,
         save_frames=save_frames, 
-        save_fov=save_fov, 
-        save_combined_tiff=save_comb_tif
+        save_fov=save_fov,
     )
 
 if __name__ == "__main__":
@@ -311,8 +307,6 @@ if __name__ == "__main__":
     parser.add_argument("--save_png", action="store_true", help="Whether to save PNG files for visualization")
     parser.add_argument('--save_frames', action='store_true', help="Whether to save each frame individually")
     parser.add_argument('--save_fov', action='store_true', help="Whether to save each fov individually")
-    parser.add_argument('--save_combined_tiff', type=str_to_bool, default=True, 
-                        help="Whether to save the combined tiff file, either all frames or fov depending on input file")
     parser.add_argument("--channels", nargs='+', default=None, help="Specify which channels to save (e.g., 'Cy5', 'Mono')")
 
     args = parser.parse_args()
@@ -323,7 +317,6 @@ if __name__ == "__main__":
         save_png=args.save_png,
         save_frames=args.save_frames,
         save_fov=args.save_fov,
-        save_comb_tif=args.save_combined_tiff,
         selected_channels=args.channels,
     )
 
@@ -355,13 +348,13 @@ if __name__ == "__main__":
 ## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20241010_ZMB_Anabaena/20241010_001_ZMB.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_fov
 
 # individual fov's no multi tiff, no png
-## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20241010_ZMB_Anabaena/20241010_001_ZMB.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_combined_tiff False
+## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20241010_ZMB_Anabaena/20241010_001_ZMB.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground
 
 # mutli frame tiff combined, individual frame tiff, pngs
 ## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20210709_Ana_-N_to_-N_channelbf,cy5,cfp,rfp_seq0000_0000.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_png --save_frames
 
 # individual frame tiff, no multiframe tiff, pngs
-## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20210709_Ana_-N_to_-N_channelbf,cy5,cfp,rfp_seq0000_0000.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_png --save_frames --save_combined_tiff False
+## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20210709_Ana_-N_to_-N_channelbf,cy5,cfp,rfp_seq0000_0000.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_png --save_frames
 
 # individual frame tiff, no multiframe tiff, no pngs
-## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20210709_Ana_-N_to_-N_channelbf,cy5,cfp,rfp_seq0000_0000.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_frames --save_combined_tiff False
+## python src/file_formatting/ImageHandler.py --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20210709_Ana_-N_to_-N_channelbf,cy5,cfp,rfp_seq0000_0000.nd2 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground --save_frames
