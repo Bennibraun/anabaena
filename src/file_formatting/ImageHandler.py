@@ -29,11 +29,13 @@ class ImageHandler:
             print(f"ND2 File Metadata: {self.reader.metadata}")
             print(f"ND2 Image Shape: {self.reader.sizes}")
 
-        elif self.input_file.endswith(".tif") or self.input_file.endswith(".tiff"):
-            self.file_type = "tif"
-            self.reader = tifffile.imread(self.input_file)
-            print(f"TIFF Image Shape: {self.reader.shape}")
-            print(f"TIFF Data Type: {self.reader.dtype}")
+        # commenting out b/c no functionality for tiff files yet
+
+        # elif self.input_file.endswith(".tif") or self.input_file.endswith(".tiff"):
+        #     self.file_type = "tif"
+        #     self.reader = tifffile.imread(self.input_file)
+        #     print(f"TIFF Image Shape: {self.reader.shape}")
+        #     print(f"TIFF Data Type: {self.reader.dtype}")
 
         self.identify_frames()
 
@@ -81,8 +83,10 @@ class ImageHandler:
             movie_frame = movie.get_frame(frame_idx)
             # print(movie_frame.shape)
             return np.array(movie_frame, dtype=np.uint16)
-        elif self.file_type == "tif":
-            return movie[frame_idx]
+        
+        # comenting out b/c no funcitonality for tiff
+        # elif self.file_type == "tif":
+        #     return movie[frame_idx]
 
     def get_movie_fov(self, movie, v_idx=None, frame_idx=0):
         """
@@ -144,9 +148,8 @@ class ImageHandler:
             elif 'v' in self.dimensions:
                 tiff_stack = self.process_frames_over_fov(images, base_filename, save_png, save_fov)
 
-            self.save_channelsplit_tiff(base_filename, tiff_stack)
+            # self.save_channelsplit_tiff(base_filename, tiff_stack)
         
-
     def save_channelsplit_tiff(self, base_filename, tiff_stack):
         # Save TIFF stack
         output_tiff_path = os.path.join(self.output_dir, f"{base_filename}.tiff")
@@ -167,9 +170,12 @@ class ImageHandler:
             print('Saved TIFF:', name)
         # tifffile.imwrite(output_tiff_path, np.array(tiff_stack))
 
-    def save_individual_tiff(self, tiff_stack, base_filename: str, i: int, save_tiff: bool = False):
+    def save_individual_tiff(self, tiff_stack, base_filename: str, i: int, save_tiff: bool = False, channel_name: str = None):
         if save_tiff:
-            output_tiff_path = os.path.join(self.output_dir, f'{base_filename}_{i:04d}.tiff')
+            if channel_name:
+                output_tiff_path = os.path.join(self.output_dir, f'{base_filename}_{i:04d}_{channel_name}.tiff')
+            else:
+                output_tiff_path = os.path.join(self.output_dir, f'{base_filename}_{i:04d}.tiff')
             tifffile.imwrite(output_tiff_path, np.array(tiff_stack))
             print('Saved TIFF:', output_tiff_path)
 
@@ -185,6 +191,9 @@ class ImageHandler:
         for ch in channels_to_save:
             channel_name = self.reader.metadata['channels'][ch]
             channel_image = image[..., ch]
+
+            # save individual channel tiff
+            self.save_individual_tiff([channel_image], base_filename, 0, save_tiff=True, channel_name=channel_name)
 
             # Save PNG if required
             if save_png:
@@ -206,9 +215,17 @@ class ImageHandler:
             channels_to_save = self.get_channels_to_save(image)
             channel_tiff_stack=[]
 
+            # save this image and the individual channels to different channels
+            # to individual tiffs
+
+
             for ch in channels_to_save:
                 channel_name = self.reader.metadata['channels'][ch]
                 channel_image = image[..., ch]
+                if channel_name == 'Mono':
+                    channel_name = 'Brightfield'
+                # save individual channel tiff
+                self.save_individual_tiff([channel_image], base_filename, i, save_tiff=True, channel_name=channel_name)
 
                 # Append the channel image to the TIFF stack for saving
                 channel_tiff_stack.append(channel_image)
@@ -217,7 +234,7 @@ class ImageHandler:
                     self.save_png(base_filename, i, channel_name, channel_image)
 
             # Save individual TIFF for the current time frame, if specified
-            self.save_individual_tiff(channel_tiff_stack, base_filename, i, save_tiff)
+            # self.save_individual_tiff(channel_tiff_stack, base_filename, i, save_tiff)
 
             tiff_stack.append(image)
 
@@ -240,6 +257,12 @@ class ImageHandler:
                 channel_name = self.reader.metadata['channels'][ch]
                 channel_image = image[..., ch]
                 
+                if channel_name == 'Mono':
+                    channel_name = 'Brightfield'
+
+                # save individual channel tiff
+                self.save_individual_tiff([channel_image], base_filename, i, save_tiff=True, channel_name=channel_name)
+
                 # Append the channel image to the TIFF stack for saving
                 channel_tiff_stack.append(channel_image)
                 
@@ -247,7 +270,7 @@ class ImageHandler:
                     self.save_png(base_filename, i, channel_name, channel_image)
 
             # Save individual TIFF for the current field of view, if specified
-            self.save_individual_tiff(channel_tiff_stack, base_filename, i, save_tiff)
+            # self.save_individual_tiff(channel_tiff_stack, base_filename, i, save_tiff)
 
             tiff_stack.append(image)
 
@@ -319,7 +342,6 @@ if __name__ == "__main__":
         save_fov=args.save_fov,
         selected_channels=args.channels,
     )
-
 
 ## example usage
 
