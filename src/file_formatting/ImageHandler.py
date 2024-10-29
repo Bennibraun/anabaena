@@ -77,34 +77,7 @@ class ImageHandler:
         if self.dimensions != ['x','y','c']:
             raise ValueError("Dimensions must be ['x', 'y', 'c']")
         
-    def get_movie_frame(self, movie, frame_idx, v_idx=0):
-        """
-        Given a movie and an index for the 'v' axis (such as fields of view or time points),
-        load the image with 'x', 'y', and 'c' dimensions.
-        
-        Args:
-            movie: The movie file (e.g., ND2 or TIF format).
-            v_idx: The index along the 'v' axis (fields of view or time points). If None, load all.
-            frame_idx: The index of the frame for ND2 files (default is 0 for static images).
-        
-        Returns:
-            A numpy array representing the selected FOV across all channels for the 'v' index.
-            If v_idx is None, returns all fields of view.
-        """
-        if self.file_type == "nd2":
-            # Initialize a list to hold the frames for each channel
-            channel_frames = []
-
-            # Iterate over the channels and fetch the frames
-            for num_channels in range(movie.sizes['c']):
-                frame = movie.get_frame_2D(t=frame_idx, c=num_channels, v=v_idx)
-                channel_frames.append(np.array(frame, dtype=np.uint16))
-
-            # Stack the frames across the channel axis
-            stacked_img = np.stack(channel_frames, axis=-1)
-            return stacked_img
-
-    def get_movie_fov(self, movie, v_idx=None, frame_idx=0):
+    def get_movie_frame(self, movie, frame_idx=0, v_idx=0):
         """
         Given a movie and an index for the 'v' axis (such as fields of view or time points),
         load the image with 'x', 'y', and 'c' dimensions.
@@ -169,7 +142,7 @@ class ImageHandler:
         t_size = self.reader.sizes['t']
 
         for i in tqdm(range(t_size), desc="Frames", unit="frame"):
-            image = self.get_movie_frame(images, i)
+            image = self.get_movie_frame(images, frame_idx=i)
             self.save_channel_tiffs(image, base_filename, i, save_png)
         return image
 
@@ -179,7 +152,7 @@ class ImageHandler:
 
         for i in tqdm(range(v_size), desc="Frames", unit="frame"):
 
-            image = self.get_movie_fov(images, i)
+            image = self.get_movie_frame(images, v_idx=i)
             self.save_channel_tiffs(image, base_filename, i, save_png)
 
         return image
