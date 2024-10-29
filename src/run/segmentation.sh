@@ -14,3 +14,9 @@ nvidia-smi
 
 python run_segmentation_tiffs.py --input_dir /Users/bebr1814/projects/anabaena/scratch_data/20241010_ZMB_Anabaena/20241010_001_ZMB001/tif/ --output_dir /Users/bebr1814/projects/anabaena/scratch_data/20241010_ZMB_Anabaena/20241010_001_ZMB001/segment_test --model /Users/bebr1814/projects/anabaena/models/33047/33047_chris_original
 
+python run_segmentation_tiffs.py --input_dir /Users/bebr1814/projects/anabaena/scratch_data/20241010_ZMB_Anabaena/20241010_001_ZMB002/tif/ --output_dir /Users/bebr1814/projects/anabaena/scratch_data/20241010_ZMB_Anabaena/20241010_001_ZMB002/segment_test --model /Users/bebr1814/projects/anabaena/models/33047/33047_chris_original
+
+python run_segmentation_tiffs.py --input_dir /Users/bebr1814/projects/anabaena/scratch_data/20241010_ZMB_Anabaena/20241010_001_ZMB003/tif/ --output_dir /Users/bebr1814/projects/anabaena/scratch_data/20241010_ZMB_Anabaena/20241010_001_ZMB003/segment_test --model /Users/bebr1814/projects/anabaena/models/33047/33047_chris_original
+
+python run_segmentation_tiffs.py --input_dir /Users/bebr1814/projects/anabaena/scratch_data/20241010_ZMB_Anabaena/20241010_001_ZMB004/tif/ --output_dir /Users/bebr1814/projects/anabaena/scratch_data/20241010_ZMB_Anabaena/20241010_001_ZMB004/segment_test --model /Users/bebr1814/projects/anabaena/models/33047/33047_chris_original
+

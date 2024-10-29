@@ -151,15 +151,15 @@ class ImageHandler:
         # Save TIFF stack
         output_tiff_path = os.path.join(self.output_dir, f"{base_filename}.tiff")
         n_channels = self.reader.shape[-1]
-        print(self.reader.shape)
+        # print(self.reader.shape)
 
         image = self.reader[0]
         image = image.transpose(2,0,1)
 
-        print(image.shape)
-        print(image)
+        # print(image.shape)
+        # print(image)
 
-        print(image[0])
+        # print(image[0])
 
         for c in range(n_channels):
             name = os.path.join(self.output_dir, f"{base_filename}.tiff").replace('.tif',f'.{self.reader.metadata["channels"][c].replace(" ","_").lower().replace("mono","brightfield")}.tif')
