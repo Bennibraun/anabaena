@@ -10,6 +10,7 @@ You can call this object in many ways, I will specify 2 here, bash and python.
 python src/file_formatting/ImageHandler.py \
 --input_file /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/20241010_ZMB_Anabaena/20241010_001_ZMB001/nd2/01.nd2 \
 --output_dir /Users/zaca2954/academics/anabaena/anabaena_mcdb6440/playground \
+--save_png # include this if you want png's to be saved, if not comment it out or remove it
 ```
 
 ## 2. Python

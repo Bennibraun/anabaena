@@ -14,6 +14,7 @@
 - debug `segmentation.py`
 - work on ground truths, on the movies, new data -- movies are basically individual images
 - preprocessing steps to uniform brightness contrast
+- format images and masks for cellpose 2.0 / 3.0, `_(img/image).tiff` and `_mask.tiff`
 
 # Finished
 - [x] convert files to tiff's, ensure all current scripts work with tiff's and change if necessary to use `ImageHandler()`

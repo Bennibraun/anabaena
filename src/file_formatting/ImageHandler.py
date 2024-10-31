@@ -77,7 +77,7 @@ class ImageHandler:
         if self.dimensions != ['x','y','c']:
             raise ValueError("Dimensions must be ['x', 'y', 'c']")
         
-    def get_movie_frame(self, movie, frame_idx=0, v_idx=0):
+    def get_frame(self, movie, frame_idx=0, v_idx=0):
         """
         Given a movie and an index for the 'v' axis (such as fields of view or time points),
         load the image with 'x', 'y', and 'c' dimensions.
@@ -116,7 +116,7 @@ class ImageHandler:
             print(self.dimensions)
 
             if self.dimensions == ['x', 'y', 'c']:
-                self.process_single_frame(self.get_movie_frame(images, 0), base_filename, save_png)
+                self.process_single_frame(self.get_frame(images, 0), base_filename, save_png)
             
             elif 't' in self.dimensions:
                 self.process_frames_over_time(images, base_filename, save_png)
@@ -127,9 +127,9 @@ class ImageHandler:
     def save_individual_tiff(self, tiff_stack, base_filename: str, i: int, save_tiff: bool = False, channel_name: str = None):
         if save_tiff:
             if channel_name:
-                output_tiff_path = os.path.join(self.output_dir, f'{base_filename}_{i:04d}_{channel_name.lower().replace(' ', '_')}.tiff')
+                output_tiff_path = os.path.join(self.output_dir, f'{base_filename}_{i:04d}_{channel_name.lower().replace(" ", "_")}_image.tiff')
             else:
-                output_tiff_path = os.path.join(self.output_dir, f'{base_filename}_{i:04d}.tiff')
+                output_tiff_path = os.path.join(self.output_dir, f'{base_filename}_{i:04d}_image.tiff')
             tifffile.imwrite(output_tiff_path, np.array(tiff_stack))
             print('Saved TIFF:', output_tiff_path)
 
@@ -142,7 +142,7 @@ class ImageHandler:
         t_size = self.reader.sizes['t']
 
         for i in tqdm(range(t_size), desc="Frames", unit="frame"):
-            image = self.get_movie_frame(images, frame_idx=i)
+            image = self.get_frame(images, frame_idx=i)
             self.save_channel_tiffs(image, base_filename, i, save_png)
         return image
 
@@ -152,7 +152,7 @@ class ImageHandler:
 
         for i in tqdm(range(v_size), desc="Frames", unit="frame"):
 
-            image = self.get_movie_frame(images, v_idx=i)
+            image = self.get_frame(images, v_idx=i)
             self.save_channel_tiffs(image, base_filename, i, save_png)
 
         return image
