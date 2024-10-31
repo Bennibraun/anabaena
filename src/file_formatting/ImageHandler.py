@@ -167,7 +167,7 @@ class ImageHandler:
     def save_png(self, base_filename, frame_index, channel_name, channel_image):
         """Saves a PNG for a given frame and channel."""
         png_filename = f"{base_filename}_frame_{frame_index:04d}_{channel_name.lower().replace(' ', '_')}.png"
-        png_path = os.path.join(self.output_dir, png_filename)
+        png_path = os.path.join(self.output_dir, png_filename)  
         imsave(png_path, img_as_ubyte(channel_image))
         print(f"Saved PNG: {png_path}")
 

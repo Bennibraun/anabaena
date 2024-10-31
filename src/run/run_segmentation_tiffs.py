@@ -308,7 +308,8 @@ for i in tqdm(
 ):
     image_id = list(images.keys())[i]
     # Fetch the brightfield image
-    image = tifffile.imread(images[image_id]['brightfield'])
+    img_path = images[image_id]['brightfield']
+    image = tifffile.imread(img_path)
     
     # Size estimation and potential warning if size is unusually large
     if size is None:
@@ -333,9 +334,15 @@ for i in tqdm(
 
     # save everything
     os.makedirs(output_dir, exist_ok=True)
-    tifffile.imwrite(os.path.join(output_dir, f"{image_id}.brightfield.mask.tiff"), mask)
-    tifffile.imwrite(os.path.join(output_dir, f"{image_id}.brightfield.flows.tiff"), flow[0])
-    tifffile.imwrite(os.path.join(output_dir, f"{image_id}.brightfield.probs.tiff"), flow[2])
+
+    # tifffile.imwrite(os.path.join(output_dir, f"{image_id:02d}.brightfield._masks.tiff"), mask)
+    # tifffile.imwrite(os.path.join(output_dir, f"{image_id:02d}.brightfield.flows.tiff"), flow[0])
+    # tifffile.imwrite(os.path.join(output_dir, f"{image_id:02d}.brightfield.probs.tiff"), flow[2])
+
+    tifffile.imwrite(img_path.replace('.tiff', '_masks.tiff'), mask)
+    tifffile.imwrite(img_path.replace('.tiff', '_flows.tiff'), flow[0])
+    # tifffile.imwrite(img_path.replace('.tiff', '_probs.tiff'), flow[2])
+
 
     # # Append segmentation results
     # flows.append(flow[0])
