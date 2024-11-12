@@ -18,7 +18,7 @@ python -m cellpose --train --use_gpu \
         --verbose --chan 0 --chan2 0 \
         --dir "$trainDir" \
         --mask_filter _labeled \
-        --img_filter _prep \
+        --img_filter _img \
         --pretrained_model "$model" \
         --learning_rate 0.001 --weight_decay 0.0001 \
         --n_epochs 500 --save_every 50 \

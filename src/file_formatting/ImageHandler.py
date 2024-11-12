@@ -182,7 +182,7 @@ class ImageHandler:
             if save_png:
                 self.save_png(base_filename, i, channel_name, [channel_image])
     
-    def save_tiff_movie_as_images(self,selected_frames=None,random_sample=None,suffix="",has_channels=True):
+    def save_tiff_movie_as_images(self,selected_frames=None,random_sample=None,suffix="",has_channels=True,out_prefix=None):
         """Saves the TIFF movie as individual images."""
         frames = list(range(self.reader.shape[0]))
         if selected_frames:
@@ -197,7 +197,11 @@ class ImageHandler:
             if has_channels:
                 brightfield = self.reader[i][0]
                 cy5 = self.reader[i][1]
-                brightfield_out = os.path.join(self.output_dir, f"{os.path.basename(self.input_file).replace('.tiff','').replace('.tif','')}.frame_{i}.brightfield{suffix}.tiff")
+                if out_prefix:
+                    brightfield_out = os.path.join(self.output_dir, f"{out_prefix}.frame_{i}.brightfield{suffix}.tiff")
+                    cy5_out = os.path.join(self.output_dir, f"{out_prefix}.frame_{i}.cy5{suffix}.tiff")
+                else:
+                    brightfield_out = os.path.join(self.output_dir, f"{os.path.basename(self.input_file).replace('.tiff','').replace('.tif','')}.frame_{i}.brightfield{suffix}.tiff")
                 tifffile.imwrite(brightfield_out, brightfield)
                 # print(f"Saved TIFF: {brightfield_out}")
                 # cy5_out = os.path.join(self.output_dir, f"{os.path.basename(self.input_file).replace('.tiff','').replace('.tif','')}.frame_{i}.cy5.tiff")
@@ -205,7 +209,10 @@ class ImageHandler:
             else:
                 # probably a mask
                 mask = self.reader[i]
-                mask_out = os.path.join(self.output_dir, f"{os.path.basename(self.input_file).replace('.tiff','').replace('.tif','')}.frame_{i}.mask{suffix}.tiff")
+                if out_prefix:
+                    mask_out = os.path.join(self.output_dir, f"{out_prefix}.frame_{i}.brightfield{suffix}.tiff")
+                else:
+                    mask_out = os.path.join(self.output_dir, f"{os.path.basename(self.input_file).replace('.tiff','').replace('.tif','')}.frame_{i}.brightfield{suffix}.tiff")
                 tifffile.imwrite(mask_out, mask)
 
         
