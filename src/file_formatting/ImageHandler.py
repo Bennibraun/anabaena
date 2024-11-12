@@ -19,36 +19,31 @@ class ImageHandler:
         self.input_file = input_file
         self.output_dir = output_dir
         self.reader = None
-        self.file_type = None
         self.dimensions = ['x', 'y', 'c']
         self.selected_channels = selected_channels  # List of selected channels to process
+        self.is_tiff = False if self.input_file.endswith(".nd2") else True
 
         # Ensure output directories exist
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
+        os.makedirs(self.output_dir,exist_ok=True)
     
     def setup_reader(self):
         """Sets up the reader based on the file type. Currently only supports ND2 files."""
-        if self.input_file.endswith(".nd2"):
-            self.file_type = "nd2"
+        if self.is_tiff:
+            self.reader = tifffile.imread(self.input_file)
+            print(f"TIFF Image Shape: {self.reader.shape}")
+            print(f"TIFF Data Type: {self.reader.dtype}")
+        else:
             self.reader = ND2Reader(self.input_file)
             # Print ND2-specific metadata and image shape
             print(f"ND2 File Metadata: {self.reader.metadata}")
             print(f"ND2 Image Shape: {self.reader.sizes}")
 
-        # commenting out b/c no functionality for tiff files yet
-
-        # elif self.input_file.endswith(".tif") or self.input_file.endswith(".tiff"):
-        #     self.file_type = "tif"
-        #     self.reader = tifffile.imread(self.input_file)
-        #     print(f"TIFF Image Shape: {self.reader.shape}")
-        #     print(f"TIFF Data Type: {self.reader.dtype}")
-
         self.identify_frames() # Identify frames based on the dimensions of the ND2 or TIFF file
 
     def identify_frames(self):
         """Identifies frames based on the dimensions of the ND2 or TIFF file."""
-        if self.file_type == 'nd2':
+
+        if not self.is_tiff:
             # Check if 't' or 'v' dimensions are greater than 1
             t_size = self.reader.sizes.get('t',1)
             v_size = self.reader.sizes.get('v',0)
@@ -112,17 +107,18 @@ class ImageHandler:
         print(f"Reading input file {self.input_file}")
         base_filename = os.path.splitext(os.path.basename(self.input_file))[0]
 
-        with self.reader as images:
-            print(self.dimensions)
+        images = self.reader
 
-            if self.dimensions == ['x', 'y', 'c']:
-                self.process_single_frame(self.get_frame(images, 0), base_filename, save_png)
-            
-            elif 't' in self.dimensions:
-                self.process_frames_over_time(images, base_filename, save_png)
-            
-            elif 'v' in self.dimensions:
-                self.process_frames_over_fov(images, base_filename, save_png)
+        print(self.dimensions)
+
+        if self.dimensions == ['x', 'y', 'c']:
+            self.process_single_frame(self.get_frame(images, 0), base_filename, save_png)
+        
+        elif 't' in self.dimensions:
+            self.process_frames_over_time(images, base_filename, save_png)
+        
+        elif 'v' in self.dimensions:
+            self.process_frames_over_fov(images, base_filename, save_png)
 
     def save_individual_tiff(self, tiff_stack, base_filename: str, i: int, save_tiff: bool = False, channel_name: str = None):
         if save_tiff:
@@ -185,6 +181,37 @@ class ImageHandler:
             self.save_individual_tiff([channel_image], base_filename, i, save_tiff=True, channel_name=channel_name)
             if save_png:
                 self.save_png(base_filename, i, channel_name, [channel_image])
+    
+    def save_tiff_movie_as_images(self,selected_frames=None,random_sample=None,suffix="",has_channels=True):
+        """Saves the TIFF movie as individual images."""
+        frames = list(range(self.reader.shape[0]))
+        if selected_frames:
+            assert all([frame in frames for frame in selected_frames]), "Selected frames must be within the range of the TIFF movie."
+            frames = selected_frames
+        elif random_sample:
+            frames = np.random.choice(frames, random_sample, replace=False)
+        elif selected_frames and random_sample:
+            raise ValueError("Please specify either selected_frames or random_sample, not both.")
+        
+        for i in tqdm(frames, desc="Frames", unit="frame"):
+            if has_channels:
+                brightfield = self.reader[i][0]
+                cy5 = self.reader[i][1]
+                brightfield_out = os.path.join(self.output_dir, f"{os.path.basename(self.input_file).replace('.tiff','').replace('.tif','')}.frame_{i}.brightfield{suffix}.tiff")
+                tifffile.imwrite(brightfield_out, brightfield)
+                # print(f"Saved TIFF: {brightfield_out}")
+                # cy5_out = os.path.join(self.output_dir, f"{os.path.basename(self.input_file).replace('.tiff','').replace('.tif','')}.frame_{i}.cy5.tiff")
+                # tifffile.imwrite(cy5_out, cy5_out)
+            else:
+                # probably a mask
+                mask = self.reader[i]
+                mask_out = os.path.join(self.output_dir, f"{os.path.basename(self.input_file).replace('.tiff','').replace('.tif','')}.frame_{i}.mask{suffix}.tiff")
+                tifffile.imwrite(mask_out, mask)
+
+        
+
+
+
 
 # In[3]: Main Function
 def main(

@@ -239,7 +239,7 @@ else:
 
 # Load the size estimation model
 print("Loading size estimation model")
-model_type = "cyto2"
+model_type = "cyto3"
 pretrained_size = models.size_model_path(model_type)
 size_model = models.SizeModel(
     device=device, pretrained_size=pretrained_size, cp_model=model

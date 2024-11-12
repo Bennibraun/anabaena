@@ -6,6 +6,8 @@
 # Note that this cannot be run on Fiji. It needs to be on the machine that has Biofstorage mounted
 
 rsync -avz --chmod=ug=rwx --chmod=o=rx -e ssh --ignore-existing --progress /drives/y/* bebr1814@fiji.colorado.edu:~/projects/anabaena/scratch_data/
+# rsync -avz --chmod=ug=rwx --chmod=o=rx -e ssh --ignore-existing --progress /drives/y/fov_images/* bebr1814@fiji.colorado.edu:~/projects/anabaena/scratch_data/fov_images/
+
 
 # The mac version would look something like this:
 rsync -avz --chmod=ug=rwx --chmod=o=rx -e ssh --ignore-existing --progress /Volumes/[drive name]/* [username]@fiji.colorado.edu:[path to directory on fiji]
