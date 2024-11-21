@@ -16,7 +16,8 @@
 - preprocessing steps to uniform brightness contrast
 - format images and masks for cellpose 2.0 / 3.0, `_(img/image).tiff` and `_mask.tiff`
 - convert npy file into tiff file (create it if it does not exist)
-
+- remove shadow from brightfeild images
+  
 # Finished
 - [x] convert files to tiff's, ensure all current scripts work with tiff's and change if necessary to use `ImageHandler()`
 - [x] when saving `.tiff's` have the channels save as one file rather than seperates. for png's pdf's, and other vector and raster images 
