@@ -22,7 +22,8 @@ class ImageHandler:
         self.dimensions = ['x', 'y', 'c']
         self.selected_channels = selected_channels  # List of selected channels to process
         self.is_tiff = False if self.input_file.endswith(".nd2") else True
-
+        self.file_type = "tiff" if self.is_tiff else "nd2"
+        
         # Ensure output directories exist
         os.makedirs(self.output_dir,exist_ok=True)
     

@@ -17,3 +17,4 @@ rsync -avz --chmod=ug=rwx --chmod=o=rx -e ssh --ignore-existing --progress /Volu
 rsync -rvz -e ssh --ignore-existing --progress bebr1814@fiji.colorado.edu:~/projects/anabaena/scratch_data/* /drives/y/
 
 # rsync -avz --chmod=ug=rwx --chmod=o=rx -e ssh --ignore-existing --progress /drives/y/* bebr1814@fiji.colorado.edu:~/projects/anabaena/scratch_data/
+
