@@ -6,13 +6,16 @@
 #SBATCH -c 1
 #SBATCH --gres=gpu:1
 #SBATCH --mem=32gb
-#SBATCH --mail-user=bebr1814@colorado.edu
 
 set -euxo pipefail
 
-# trainDir=/Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241010_ZMB_Anabaena/training_data
-# trainDir=/Users/bebr1814/projects/anabaena/scratch_data/bulk_training_set
-trainDir=/Users/bebr1814/projects/anabaena/scratch_data/movies/training_images
+outdir=/scratch/Shares/anabaena_mcdb6440/training/models
+
+# trainDir=/scratch/Shares/anabaena_mcdb6440/fov_images/20241010_ZMB_Anabaena/training_data
+# trainDir=/scratch/Shares/anabaena_mcdb6440/movies/training_images
+trainDir=/scratch/Shares/anabaena_mcdb6440/bulk_training_set
+name="bulk.lr0001.wd0001.ep500.2chan.cyto3.12.6.24"
+
 model="cyto3"
 
 cd "$trainDir" || exit 1
@@ -23,7 +26,8 @@ python -m cellpose --train --use_gpu \
         --img_filter _img \
         --pretrained_model "$model" \
         --learning_rate 0.0001 --weight_decay 0.0001 \
-        --n_epochs 500 --save_every 50
+        --n_epochs 500 --save_every 50 \
+        --savedir "$outdir" --model_name_out "$name" \
         --verbose
 
 

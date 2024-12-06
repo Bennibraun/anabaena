@@ -23,5 +23,8 @@ nvidia-smi
 
 
 # new model
-python run_segmentation_tiffs.py --input_dir /Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241010_ZMB_Anabaena/20241010_001_ZMB001/tif/ --output_dir /Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241010_ZMB_Anabaena/20241010_001_ZMB001/tif/ --model /Users/bebr1814/projects/anabaena/scratch_data/fov_images/training_data/models/cellpose_1731436125.9726756
+# python run_segmentation_tiffs.py --input_dir /Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241010_ZMB_Anabaena/20241010_001_ZMB001/tif/ --output_dir /Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241010_ZMB_Anabaena/20241010_001_ZMB001/segmentation/ --model /scratch/Shares/anabaena_mcdb6440/bulk_training_set/models/cellpose_1733422742.0172162
+# python run_segmentation_tiffs.py --input_dir /Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241010_ZMB_Anabaena/20241010_001_ZMB001/tif/ --output_dir /Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241010_ZMB_Anabaena/20241010_001_ZMB001/segmentation/ --model /scratch/Shares/anabaena_mcdb6440/bulk_training_set/models/cellpose_1733459883.7576745
+python run_segmentation_tiffs.py --input_dir /Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241114_ZMB_Anabaena/set1.006/tif/ --output_dir /Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241114_ZMB_Anabaena/set1.006/tif/ --model /scratch/Shares/anabaena_mcdb6440/bulk_training_set/models/cellpose_1733459883.7576745
+
 
