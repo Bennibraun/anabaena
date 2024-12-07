@@ -14,7 +14,7 @@ outdir=/scratch/Shares/anabaena_mcdb6440/training/models
 # trainDir=/scratch/Shares/anabaena_mcdb6440/fov_images/20241010_ZMB_Anabaena/training_data
 # trainDir=/scratch/Shares/anabaena_mcdb6440/movies/training_images
 trainDir=/scratch/Shares/anabaena_mcdb6440/bulk_training_set
-name="bulk.lr0001.wd0001.ep500.2chan.cyto3.12.6.24"
+name="bulk.lr00001.wd0001.ep500.2chan.cyto3.12.6.24"
 
 model="cyto3"
 
@@ -25,7 +25,7 @@ python -m cellpose --train --use_gpu \
         --mask_filter _mask \
         --img_filter _img \
         --pretrained_model "$model" \
-        --learning_rate 0.0001 --weight_decay 0.0001 \
+        --learning_rate 0.00001 --weight_decay 0.0001 \
         --n_epochs 500 --save_every 50 \
         --savedir "$outdir" --model_name_out "$name" \
         --verbose

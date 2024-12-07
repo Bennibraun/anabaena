@@ -261,7 +261,7 @@ print(f"Reading input dir {input_dir}")
 ###
 #########################################################################
 
-image_paths = glob.glob(os.path.join(input_dir, "*.merged.tiff"))
+image_paths = glob.glob(os.path.join(input_dir, "*.merged_img.tiff"))
 first_image = tifffile.imread(image_paths[0])
 if first_image.ndim == 2:
     n_channels = 1
@@ -312,7 +312,7 @@ for i in tqdm(
     # tifffile.imwrite(os.path.join(output_dir, f"{image_id:02d}.brightfield.flows.tiff"), flow[0])
     # tifffile.imwrite(os.path.join(output_dir, f"{image_id:02d}.brightfield.probs.tiff"), flow[2])
 
-    tifffile.imwrite(img_path.replace('.tiff', '_segmented.tiff'), mask)
+    tifffile.imwrite(os.path.join(output_dir,os.path.basename(img_path).replace('.tiff', '_segmented.tiff'), mask)
     # tifffile.imwrite(img_path.replace('.tiff', '_flows.tiff'), flow[0])
     # tifffile.imwrite(img_path.replace('.tiff', '_probs.tiff'), flow[2])
 

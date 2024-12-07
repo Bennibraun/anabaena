@@ -9,6 +9,6 @@
 
 nvidia-smi
 
-python run_segmentation_tiffs.py --input_dir /Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241114_ZMB_Anabaena/set1.006/tif/ --output_dir /Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241114_ZMB_Anabaena/set1.006/tif/ --model /scratch/Shares/anabaena_mcdb6440/bulk_training_set/models/cellpose_1733459883.7576745
+python run_segmentation_tiffs.py --input_dir /Users/bebr1814/projects/anabaena/scratch_data/fov_images/20241114_ZMB_Anabaena/set1.006/tif/ --output_dir /Users/bebr1814/projects/anabaena/scratch_data/bulk_segmentation_output --model /scratch/Shares/anabaena_mcdb6440/bulk_training_set/models/cellpose_1733459883.7576745
 
 
