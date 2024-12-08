@@ -312,7 +312,7 @@ for i in tqdm(
     # tifffile.imwrite(os.path.join(output_dir, f"{image_id:02d}.brightfield.flows.tiff"), flow[0])
     # tifffile.imwrite(os.path.join(output_dir, f"{image_id:02d}.brightfield.probs.tiff"), flow[2])
 
-    tifffile.imwrite(os.path.join(output_dir,os.path.basename(img_path).replace('.tiff', '_segmented.tiff'), mask)
+    tifffile.imwrite(os.path.join(output_dir,os.path.basename(img_path).replace('.tiff', '_segmented.tiff')), mask)
     # tifffile.imwrite(img_path.replace('.tiff', '_flows.tiff'), flow[0])
     # tifffile.imwrite(img_path.replace('.tiff', '_probs.tiff'), flow[2])
 
